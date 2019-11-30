@@ -8,8 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -21,44 +23,39 @@ public class UserRepositoryTest {
     @InjectMocks
     private UserRepository userRepository;
 
-    @InjectMocks
+    @Mock
     private JdbcTemplate jdbcTemplate;
+
+    @Mock
+    private RowMapper<UserBean> rowMapper;
 
     @Before
     public void initUser() {
         tempUser = new UserBean(1,"iam@batman.com", "batman", "bat");
-        System.out.println(tempUser);
     }
 
-//    @Test
-//    public void getUserByUsername_User_Success() {
-//        when(jdbcTemplate.queryForObject(anyString(), eq(String.class)))
-//                .thenReturn("\"id\":1," +
-//                            "\"email\":\"iam@batman.com\"," +
-//                            "\"password\":\"bat\"," +
-//                            "\"username\":\"batman\"");
-//
-//        .thenReturn(String.valueOf(tempUser));
-//
-//        foundUser = userRepository.getUserByUsername(foundUser.getUsername());
-//
-//        assertEquals(tempUser.getId(), foundUser.getId());
-//        assertEquals(tempUser.getEmail(), foundUser.getEmail());
-//        assertEquals(tempUser.getPassword(), foundUser.getPassword());
-//        assertEquals(tempUser.getUsername(), foundUser.getUsername());
-//    }
+    @Test
+    public void getUserByUsername_User_Success() {
+        System.out.println(tempUser.getUsername());
+        String sql = "SELECT * FROM users WHERE username = ?";
+//        when(jdbcTemplate.queryForObject(sql, new Object[]{tempUser.getUsername()}, rowMapper)).thenReturn(tempUser);
+        when(jdbcTemplate.queryForObject(anyString(), any(), any(RowMapper.class))).thenReturn(tempUser);
+        System.out.println(foundUser);
 
-// TODO: how does the below work and what is the expected response for a user not found?
 
-//    @Test
-//    public void getUserByUsername_User_Failure() {
-//        when(jdbcTemplate.queryForObject(anyString(), eq(String.class))).thenReturn("{}");
-//
-//        foundUser = userRepository.getUserByUsername(foundUser.getUsername());
-//
-//        assertEquals(0, foundUser.getId());
-//        assertEquals(null, foundUser.getEmail());
-//        assertEquals(null, foundUser.getPassword());
-//        assertEquals(null, foundUser.getUsername());
-//    }
+        foundUser = userRepository.getUserByUsername(tempUser.getUsername());
+
+        assertEquals(tempUser.getUsername(), foundUser.getUsername());
+        assertEquals(tempUser.getEmail(), foundUser.getEmail());
+        assertEquals(tempUser.getPassword(), foundUser.getPassword());
+    }
+
+    @Test
+    public void getUserByUsername_User_Failure() {
+        when(jdbcTemplate.queryForObject(anyString(), any(), any(RowMapper.class))).thenReturn(null);
+
+        foundUser = userRepository.getUserByUsername(tempUser.getUsername());
+
+        assertNull(foundUser);
+    }
 }
