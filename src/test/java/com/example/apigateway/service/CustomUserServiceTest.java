@@ -45,7 +45,7 @@ public class CustomUserServiceTest {
             "Batman",
             "bat");
 
-        List<GrantedAuthority> tempAuthorities = new ArrayList<GrantedAuthority>();
+        tempAuthorities = new ArrayList<GrantedAuthority>();
     }
 
     @Test
