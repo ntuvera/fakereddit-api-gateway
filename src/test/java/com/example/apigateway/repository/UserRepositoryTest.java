@@ -38,7 +38,6 @@ public class UserRepositoryTest {
     public void getUserByUsername_User_Success() {
         System.out.println(tempUser.getUsername());
         String sql = "SELECT * FROM users WHERE username = ?";
-//        when(jdbcTemplate.queryForObject(sql, new Object[]{tempUser.getUsername()}, rowMapper)).thenReturn(tempUser);
         when(jdbcTemplate.queryForObject(anyString(), any(), any(RowMapper.class))).thenReturn(tempUser);
         System.out.println(foundUser);
 
