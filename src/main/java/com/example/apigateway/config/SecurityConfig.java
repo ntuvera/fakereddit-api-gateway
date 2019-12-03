@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,6 +41,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                         "/user/identify/**",
                         "/post/list",
                         "/comment/list",
+                        "/v2/api-docs",
+                        "/swagger-ui.html**",
+                        "/webjars/**",
+                        "/swagger",
+                        "/swagger-ui**",
+                        "/swagger-resources",
+                        "/comment/v2/**",
+                        "/post/v2/**",
+                        "/user/v2/**",
                         "/post/*/comment").permitAll()
                 .antMatchers(
                         "/user/list",
@@ -58,6 +68,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring()
+//                .antMatchers(
+//                        "/comments/swagger-ui",
+//                        "/posts/swagger-ui",
+//                        "/users/swagger-ui",
+//                        "/v2/api-docs",
+//                        "/swagger-resources**",
+//                        "/swagger-ui.html**",
+//                        "/webjars**");
+//    }
 
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService);
