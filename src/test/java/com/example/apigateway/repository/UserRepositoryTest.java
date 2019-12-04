@@ -4,15 +4,21 @@ import com.example.apigateway.bean.UserBean;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,6 +34,12 @@ public class UserRepositoryTest {
 
     @Mock
     private RowMapper<UserBean> rowMapper;
+
+    @Mock
+    private ResultSet rs;
+
+    @Captor
+    private ArgumentCaptor<RowMapper<UserBean>> rowMapperCaptor;
 
     @Before
     public void initUser() {
@@ -47,6 +59,20 @@ public class UserRepositoryTest {
         assertEquals(tempUser.getUsername(), foundUser.getUsername());
         assertEquals(tempUser.getEmail(), foundUser.getEmail());
         assertEquals(tempUser.getPassword(), foundUser.getPassword());
+    }
+
+    @Test
+    public void getUserByUserName_SUCCESS() throws SQLException {
+        when(rs.getInt(any())).thenReturn(tempUser.getId());
+        when(rs.getString(any())).thenReturn(tempUser.getEmail(), tempUser.getUsername(), tempUser.getPassword());
+
+        UserBean testUser = userRepository.getUserByUsername("batman");
+        verify(jdbcTemplate).queryForObject(anyString(), any(), rowMapperCaptor.capture());
+        RowMapper<UserBean> rm = rowMapperCaptor.getValue();
+        UserBean test = rm.mapRow(rs, 1);
+        assertEquals(test.getUsername(), tempUser.getUsername());
+        assertEquals(test.getPassword(), tempUser.getPassword());
+        assertEquals(test.getId(), tempUser.getId());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.example.apigateway.config;
 
+import com.example.apigateway.bean.UserBean;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,6 +20,10 @@ public class JwtUtil implements Serializable {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -42,7 +47,7 @@ public class JwtUtil implements Serializable {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    private Boolean isTokenExpired(String token) {
+    Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
