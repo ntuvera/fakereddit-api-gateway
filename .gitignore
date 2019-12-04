@@ -31,4 +31,4 @@ build/
 .vscode/
 
 ### Logs ###
-app.log
+api-gateway.log
